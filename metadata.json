@@ -1,0 +1,5 @@
+{
+  "name": "Flow State Tracker",
+  "description": "A minimalist, dark-themed deep work tracker with contribution visualization, persistent timer, and stoic inspiration.",
+  "requestFramePermissions": []
+}
