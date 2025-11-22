@@ -18,35 +18,7 @@ import { STORAGE_KEYS } from './constants';
 
 const generateId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
 
-const Logo3D = () => (
-  <div className="relative w-10 h-10 flex items-center justify-center">
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-      <path d="M20 2L37.3205 12V32L20 42L2.67949 32V12L20 2Z" fill="url(#logo-gradient-dark)" className="dark:block hidden" />
-      <path d="M20 2L37.3205 12V32L20 42L2.67949 32V12L20 2Z" fill="url(#logo-gradient-light)" className="dark:hidden block" />
 
-      <path d="M20 2L37.3205 12V32L20 42L2.67949 32V12L20 2Z" stroke="url(#stroke-gradient)" strokeWidth="0.5" className="opacity-50" />
-
-      <path d="M20 8L32 15L20 22L8 15L20 8Z" fill="white" fillOpacity="0.2" />
-      <path d="M20 22L32 15V29L20 36V22Z" fill="black" fillOpacity="0.2" />
-      <path d="M20 22L8 15V29L20 36V22Z" fill="black" fillOpacity="0.1" />
-
-      <defs>
-        <linearGradient id="logo-gradient-dark" x1="20" y1="2" x2="20" y2="42" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#10b981" />
-          <stop offset="1" stopColor="#047857" />
-        </linearGradient>
-        <linearGradient id="logo-gradient-light" x1="20" y1="2" x2="20" y2="42" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#34d399" />
-          <stop offset="1" stopColor="#059669" />
-        </linearGradient>
-        <linearGradient id="stroke-gradient" x1="2" y1="2" x2="38" y2="42" gradientUnits="userSpaceOnUse">
-          <stop stopColor="white" stopOpacity="0.8" />
-          <stop offset="1" stopColor="white" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-    </svg>
-  </div>
-);
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<View>(View.TRACKER);
@@ -73,7 +45,7 @@ const App: React.FC = () => {
       setTheme(storedTheme);
     }
 
-    // Initial layout check: Default to dashboard on web (lg screens)
+
     if (window.innerWidth >= 1024) {
       setLayoutMode('dashboard');
     } else {
@@ -155,15 +127,13 @@ const App: React.FC = () => {
 
   const direction = activeView === View.NOTES ? 1 : -1;
 
-  // When in Dashboard mode (Desktop), we want to prevent the main body scroll
-  // so the dashboard fits exactly on screen.
-  // In Standard mode or Mobile, we want scrolling.
+
   const isDashboard = layoutMode === 'dashboard' && activeView === View.TRACKER;
 
   return (
     <div className={`relative h-screen font-sans selection:bg-emerald-500/30 ${isDashboard ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
 
-      {/* Background Layer - Light Mode */}
+
       <motion.div
         initial={false}
         animate={{ opacity: theme === 'light' ? 1 : 0 }}
@@ -171,7 +141,7 @@ const App: React.FC = () => {
         className="fixed inset-0 z-0 bg-gradient-to-br from-zinc-50 to-zinc-200 pointer-events-none"
       />
 
-      {/* Background Layer - Dark Mode */}
+
       <motion.div
         initial={false}
         animate={{ opacity: theme === 'dark' ? 1 : 0 }}
@@ -179,22 +149,26 @@ const App: React.FC = () => {
         className="fixed inset-0 z-0 bg-gradient-to-br from-[#050505] to-zinc-950 pointer-events-none"
       />
 
-      {/* Ambient Glow Overlay */}
+
       <div className="fixed top-0 left-0 right-0 h-[500px] z-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none transition-colors duration-700"></div>
 
       <header className="hidden md:flex items-center justify-between px-12 py-6 border-b border-zinc-200/50 dark:border-white/5 backdrop-blur-md sticky top-0 z-50 bg-white/30 dark:bg-black/20 transition-colors duration-500 h-[88px]">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={toggleLayout}
-              className="hidden lg:block p-2 rounded-lg hover:bg-zinc-200/50 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-400 transition-colors"
-              title="Toggle Layout"
-            >
-              {layoutMode === 'standard' ? <Columns className="w-5 h-5" /> : <Rows className="w-5 h-5" />}
-            </button>
-            <Logo3D />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-zinc-800 dark:text-white/90 transition-colors duration-500">Flow State Tracker</span>
+          <button
+            onClick={toggleLayout}
+            className="hidden lg:block p-2 rounded-lg hover:bg-zinc-200/50 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-400 transition-colors mr-1"
+            title="Toggle Layout"
+          >
+            {layoutMode === 'standard' ? <Columns className="w-5 h-5" /> : <Rows className="w-5 h-5" />}
+          </button>
+
+          <button
+            onClick={() => handleViewChange(View.TRACKER)}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity focus:outline-none"
+          >
+            <img src="/logo.png" alt="Flow State Tracker" className="w-10 h-10 drop-shadow-lg" />
+            <span className="text-xl font-bold tracking-tight text-zinc-800 dark:text-white/90 transition-colors duration-500">Flow State Tracker</span>
+          </button>
         </div>
 
         <div className="flex items-center gap-6">

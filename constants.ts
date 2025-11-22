@@ -8,7 +8,7 @@ export const STORAGE_KEYS = {
 };
 
 export const QUOTES: StoicQuote[] = [
-  { text: "Concentrate every minute like a Roman— like a man— on doing what's in front of you with precise and genuine seriousness, tenderly, willingly, with justice.", author: "Marcus Aurelius" },
+  { text: "Concentrate every minute like a Roman like a man on doing what's in front of you with precise and genuine seriousness, tenderly, willingly, with justice.", author: "Marcus Aurelius" },
   { text: "It is not that we have a short time to live, but that we waste a lot of it.", author: "Seneca" },
   { text: "First say to yourself what you would be; and then do what you have to do.", author: "Epictetus" },
   { text: "If a man knows not to which port he sails, no wind is favorable.", author: "Seneca" },

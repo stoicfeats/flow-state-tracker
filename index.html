@@ -1,92 +1,101 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Flow State Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-              mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-            },
-            colors: {
-              neon: {
-                400: '#34d399', 
-                500: '#10b981', 
-                900: '#064e3b', 
-              }
-            },
-            animation: {
-              'flow-slow': 'flow 20s ease-in-out infinite',
-              'flow-slower': 'flow 30s ease-in-out infinite reverse',
-            },
-            keyframes: {
-              flow: {
-                '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
-                '50%': { transform: 'translate(50px, 50px) scale(1.1)' },
-              },
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Flow State Tracker</title>
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+          colors: {
+            neon: {
+              400: '#34d399',
+              500: '#10b981',
+              900: '#064e3b',
+            }
+          },
+          animation: {
+            'flow-slow': 'flow 20s ease-in-out infinite',
+            'flow-slower': 'flow 30s ease-in-out infinite reverse',
+          },
+          keyframes: {
+            flow: {
+              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+              '50%': { transform: 'translate(50px, 50px) scale(1.1)' },
             },
           },
         },
-      }
-    </script>
-    <style>
-      /* Consistent Scrollbar Configuration */
-      * {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(161, 161, 170, 0.3) transparent;
-      }
+      },
+    }
+  </script>
+  <style>
+    /* Consistent Scrollbar Configuration */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(161, 161, 170, 0.3) transparent;
+    }
 
-      /* Webkit Scrollbar Styling */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(161, 161, 170, 0.3); 
-        border-radius: 10px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(161, 161, 170, 0.5); 
-      }
-      
-      html, body {
-        height: 100%;
-        width: 100%;
-        overflow: hidden; /* Prevent double scrollbar */
-        margin: 0;
-        padding: 0;
-        overscroll-behavior-y: none; /* Prevent elastic bounce on Mac/Mobile */
-      }
+    /* Webkit Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
 
-      body {
-        transition: background-color 0.5s ease, color 0.5s ease;
-      }
-      
-      .glass-panel {
-        backdrop-filter: blur(20px);
-      }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-      .pb-safe {
-        padding-bottom: env(safe-area-inset-bottom);
-      }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(161, 161, 170, 0.3);
+      border-radius: 10px;
+    }
 
-      .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-      }
-      .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-      }
-    </style>
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(161, 161, 170, 0.5);
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      /* Prevent double scrollbar */
+      margin: 0;
+      padding: 0;
+      overscroll-behavior-y: none;
+      /* Prevent elastic bounce on Mac/Mobile */
+    }
+
+    body {
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    .glass-panel {
+      backdrop-filter: blur(20px);
+    }
+
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -100,10 +109,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
+
+<body>
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

@@ -13,7 +13,7 @@ export const useTimer = () => {
     setIsRunning(stored.isRunning);
     startTimeRef.current = stored.startTime;
     accumulatedTimeRef.current = stored.accumulatedTime;
-    
+
     if (stored.isRunning && stored.startTime) {
       const now = Date.now();
       const diff = Math.floor((now - stored.startTime) / 1000);
@@ -66,18 +66,31 @@ export const useTimer = () => {
   const pauseTimer = () => {
     if (isRunning) {
       setIsRunning(false);
-      accumulatedTimeRef.current = elapsedTime; 
+      accumulatedTimeRef.current = elapsedTime;
       startTimeRef.current = null;
       persistState(false, null, elapsedTime);
     }
   };
 
   const stopTimer = () => {
-    const finalTime = elapsedTime;
+
+    if (!startTimeRef.current && accumulatedTimeRef.current === 0) {
+      return 0;
+    }
+
+
+    const currentSession = startTimeRef.current
+      ? Math.floor((Date.now() - startTimeRef.current) / 1000)
+      : 0;
+    const finalTime = accumulatedTimeRef.current + currentSession;
+
     setIsRunning(false);
     setElapsedTime(0);
+
+
     accumulatedTimeRef.current = 0;
     startTimeRef.current = null;
+
     persistState(false, null, 0);
     return finalTime;
   };
