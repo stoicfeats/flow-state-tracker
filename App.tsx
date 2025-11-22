@@ -18,7 +18,7 @@ import { fetchSessions, addSession } from './services/data';
 import { Session, View } from './types';
 import { STORAGE_KEYS } from './constants';
 import { User } from '@supabase/supabase-js';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, X } from 'lucide-react';
 
 const generateId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
 
@@ -44,15 +44,30 @@ const App: React.FC = () => {
 
   const [targetMinutes, setTargetMinutes] = useState(30);
 
+  const [authError, setAuthError] = useState<string | null>(null);
+
   useEffect(() => {
+    // Check for errors in URL (Supabase Auth redirects)
+    const hash = window.location.hash;
+    if (hash && hash.includes('error=')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const errorDescription = params.get('error_description');
+      if (errorDescription) {
+        setAuthError(errorDescription.replace(/\+/g, ' '));
+        // Clear hash to clean up URL
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
     // Check for initial user
     getCurrentUser().then(setUser);
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth event:', _event, session); // Debug log
+      console.log('Auth event:', _event, session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        setAuthError(null); // Clear error on success
         loadSessions();
       }
     });
@@ -180,6 +195,15 @@ const App: React.FC = () => {
 
 
       <div className="fixed top-0 left-0 right-0 h-[500px] z-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none transition-colors duration-700"></div>
+
+      {authError && (
+        <div className="fixed top-0 left-0 right-0 z-[60] bg-red-500 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
+          <span>{authError}</span>
+          <button onClick={() => setAuthError(null)} className="hover:bg-white/20 p-1 rounded-full transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       <header className="hidden md:flex items-center justify-between px-12 py-6 border-b border-zinc-200/50 dark:border-white/5 backdrop-blur-md sticky top-0 z-50 bg-white/30 dark:bg-black/20 transition-colors duration-500 h-[88px]">
         <div className="flex items-center gap-3">
