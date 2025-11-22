@@ -50,8 +50,11 @@ const App: React.FC = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth event:', _event, session); // Debug log
       setUser(session?.user ?? null);
-      loadSessions(); // Reload data on auth change
+      if (session?.user) {
+        loadSessions();
+      }
     });
 
     loadSessions();
