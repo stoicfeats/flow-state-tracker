@@ -12,9 +12,13 @@ import { TrackerStandard } from './components/TrackerStandard';
 import { TrackerDashboard } from './components/TrackerDashboard';
 import { Notes } from './components/Notes';
 import { useTimer } from './hooks/useTimer';
-import { getStoredSessions, saveSession } from './services/storage';
+import { LoginModal } from './components/Auth/LoginModal';
+import { supabase, signOut, getCurrentUser } from './services/supabase';
+import { fetchSessions, addSession } from './services/data';
 import { Session, View } from './types';
 import { STORAGE_KEYS } from './constants';
+import { User } from '@supabase/supabase-js';
+import { LogOut, User as UserIcon } from 'lucide-react';
 
 const generateId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
 
@@ -25,6 +29,9 @@ const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [layoutMode, setLayoutMode] = useState<'standard' | 'dashboard'>('standard');
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const {
     elapsedTime,
@@ -38,7 +45,16 @@ const App: React.FC = () => {
   const [targetMinutes, setTargetMinutes] = useState(30);
 
   useEffect(() => {
-    setSessions(getStoredSessions());
+    // Check for initial user
+    getCurrentUser().then(setUser);
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      loadSessions(); // Reload data on auth change
+    });
+
+    loadSessions();
 
     const storedTheme = localStorage.getItem(STORAGE_KEYS.THEME) as 'dark' | 'light' | null;
     if (storedTheme) {
@@ -71,6 +87,11 @@ const App: React.FC = () => {
     localStorage.setItem(STORAGE_KEYS.THEME, theme);
   }, [theme]);
 
+  const loadSessions = async () => {
+    const data = await fetchSessions();
+    setSessions(data);
+  };
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
@@ -79,11 +100,16 @@ const App: React.FC = () => {
     setLayoutMode(prev => prev === 'standard' ? 'dashboard' : 'standard');
   }
 
+  const handleLogout = async () => {
+    await signOut();
+    setIsUserMenuOpen(false);
+  };
+
   const handleViewChange = (view: View) => {
     setActiveView(view);
   };
 
-  const handleStop = () => {
+  const handleStop = async () => {
     const duration = stopTimer();
     if (duration > 10) {
       const newSession: Session = {
@@ -92,7 +118,7 @@ const App: React.FC = () => {
         duration: duration,
         timestamp: Date.now(),
       };
-      const updated = saveSession(newSession);
+      const updated = await addSession(newSession);
       setSessions(updated);
     } else {
       resetTimer();
@@ -210,8 +236,56 @@ const App: React.FC = () => {
               )}
             </AnimatePresence>
           </button>
+
+          {/* Auth Button */}
+          <div className="relative">
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                >
+                  {user.user_metadata.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="User" className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <span className="font-bold text-sm">{user.email?.[0].toUpperCase()}</span>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden z-50"
+                    >
+                      <div className="p-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full p-3 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                      >
+                        <LogOut className="w-4 h-4" /> Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="px-4 py-2 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-90 transition-opacity shadow-lg shadow-zinc-500/20"
+              >
+                Sign In
+              </button>
+            )}
+          </div>
         </div>
       </header>
+
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
 
       <div className="md:hidden absolute top-4 right-4 z-50">
         <button

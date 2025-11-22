@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Note } from '../types';
-import { getStoredNotesList, saveStoredNotesList } from '../services/storage';
-import { Plus, Grid, List, Trash2, Save, X, Pencil } from 'lucide-react';
+import { fetchNotes, saveNotes, deleteNote } from '../services/data';
+import { supabase } from '../services/supabase';
+import { Plus, Grid, List, Trash2, Save, X, Pencil, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Notes: React.FC = () => {
@@ -13,16 +14,31 @@ export const Notes: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
-    setNotes(getStoredNotesList());
+    loadNotes();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      loadNotes();
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const saveNotesToStorage = (updatedNotes: Note[]) => {
-    setNotes(updatedNotes);
-    saveStoredNotesList(updatedNotes);
+  const loadNotes = async () => {
+    setIsLoading(true);
+    const data = await fetchNotes();
+    setNotes(data);
+    setIsLoading(false);
   };
 
-  const handleSave = () => {
+  const saveNotesToStorage = async (updatedNotes: Note[]) => {
+    setNotes(updatedNotes);
+    await saveNotes(updatedNotes);
+  };
+
+  const handleSave = async () => {
     if (!title.trim() && !content.trim()) return;
 
     const now = Date.now();
@@ -40,13 +56,14 @@ export const Notes: React.FC = () => {
       updatedNotes = [newNote, ...notes];
     }
 
-    saveNotesToStorage(updatedNotes);
+    await saveNotesToStorage(updatedNotes);
     closeEditor();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     const updated = notes.filter(n => n.id !== id);
-    saveNotesToStorage(updated);
+    setNotes(updated);
+    await deleteNote(id);
     if (editingNote?.id === id) closeEditor();
   };
 
@@ -129,11 +146,17 @@ export const Notes: React.FC = () => {
 
       {notes.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl transition-colors min-h-[400px]">
-          <div className="bg-zinc-100 dark:bg-zinc-800/50 p-6 rounded-full mb-4 ring-1 ring-zinc-200 dark:ring-zinc-700/50">
-            <Pencil className="w-8 h-8 opacity-40" />
-          </div>
-          <p className="text-lg font-medium text-zinc-600 dark:text-zinc-300">No notes yet</p>
-          <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Capture your focus and reflections here.</p>
+          {isLoading ? (
+            <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+          ) : (
+            <>
+              <div className="bg-zinc-100 dark:bg-zinc-800/50 p-6 rounded-full mb-4 ring-1 ring-zinc-200 dark:ring-zinc-700/50">
+                <Pencil className="w-8 h-8 opacity-40" />
+              </div>
+              <p className="text-lg font-medium text-zinc-600 dark:text-zinc-300">No notes yet</p>
+              <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Capture your focus and reflections here.</p>
+            </>
+          )}
         </div>
       ) : (
         <div className={viewMode === 'gallery' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'flex flex-col gap-3'}>
