@@ -12,12 +12,7 @@ export const supabase = createClient(
     supabaseAnonKey || ''
 );
 
-export const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-    });
-    if (error) throw error;
-};
+
 
 export const signInWithEmail = async (email: string) => {
     const { error } = await supabase.auth.signInWithOtp({
