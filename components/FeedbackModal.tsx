@@ -77,7 +77,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
                                     <textarea
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
-                                        placeholder="Report a bug or suggest a feature..."
+                                        placeholder="Please report any bug or suggest a feature, we will include that soon."
                                         className="w-full h-32 px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none transition-all"
                                     />
                                     {message.length > 0 && message.length < 10 && (
