@@ -107,16 +107,21 @@ export const Notes: React.FC = () => {
           <input
             type="text"
             value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="Note Title"
-            className="bg-transparent text-2xl font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 outline-none mb-4 transition-colors"
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Title"
+            maxLength={100}
+            className="w-full bg-transparent text-xl font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 border-none focus:ring-0 p-0 mb-4"
           />
           <textarea
             value={content}
-            onChange={e => setContent(e.target.value)}
-            placeholder="Start writing your deep work thoughts..."
-            className="flex-1 bg-transparent text-zinc-700 dark:text-zinc-300 resize-none outline-none font-mono leading-relaxed text-base transition-colors"
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Start writing..."
+            maxLength={5000}
+            className="w-full flex-1 bg-transparent text-zinc-600 dark:text-zinc-300 placeholder:text-zinc-400 border-none focus:ring-0 p-0 resize-none leading-relaxed"
           />
+          <div className="text-xs text-zinc-400 text-right mt-2">
+            {content.length}/5000
+          </div>
         </div>
       </motion.div>
     );

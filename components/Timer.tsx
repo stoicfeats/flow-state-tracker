@@ -87,7 +87,7 @@ export const Timer: React.FC<TimerProps> = ({
     e?.preventDefault();
     const val = parseInt(customInputValue);
     if (!isNaN(val) && val > 0) {
-      setTargetMinutes(Math.min(val, 240)); // Cap at 4 hours
+      setTargetMinutes(Math.min(val, 240));
     }
     setIsCustomInput(false);
     setCustomInputValue('');

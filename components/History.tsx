@@ -75,7 +75,6 @@ const DayGroup: React.FC<{
 
 export const History: React.FC<HistoryProps> = ({ sessions }) => {
   const groupedSessions = useMemo(() => {
-    // Sort by newest first and take recent 30 to show more history in dropdowns
     const sorted = [...sessions].sort((a, b) => b.timestamp - a.timestamp).slice(0, 30);
 
     const groups: { [key: string]: Session[] } = {};

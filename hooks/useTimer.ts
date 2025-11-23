@@ -54,30 +54,28 @@ export const useTimer = () => {
     });
   }, []);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (!isRunning) {
       const now = Date.now();
       setIsRunning(true);
       startTimeRef.current = now;
       persistState(true, now, elapsedTime);
     }
-  };
+  }, [isRunning, elapsedTime, persistState]);
 
-  const pauseTimer = () => {
+  const pauseTimer = useCallback(() => {
     if (isRunning) {
       setIsRunning(false);
       accumulatedTimeRef.current = elapsedTime;
       startTimeRef.current = null;
       persistState(false, null, elapsedTime);
     }
-  };
+  }, [isRunning, elapsedTime, persistState]);
 
-  const stopTimer = () => {
-
+  const stopTimer = useCallback(() => {
     if (!startTimeRef.current && accumulatedTimeRef.current === 0) {
       return 0;
     }
-
 
     const currentSession = startTimeRef.current
       ? Math.floor((Date.now() - startTimeRef.current) / 1000)
@@ -87,21 +85,20 @@ export const useTimer = () => {
     setIsRunning(false);
     setElapsedTime(0);
 
-
     accumulatedTimeRef.current = 0;
     startTimeRef.current = null;
 
     persistState(false, null, 0);
     return finalTime;
-  };
+  }, [persistState]);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     setIsRunning(false);
     setElapsedTime(0);
     accumulatedTimeRef.current = 0;
     startTimeRef.current = null;
     persistState(false, null, 0);
-  };
+  }, [persistState]);
 
   return {
     elapsedTime,

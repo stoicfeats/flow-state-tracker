@@ -47,27 +47,22 @@ const App: React.FC = () => {
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for errors in URL (Supabase Auth redirects)
     const hash = window.location.hash;
     if (hash && hash.includes('error=')) {
       const params = new URLSearchParams(hash.substring(1));
       const errorDescription = params.get('error_description');
       if (errorDescription) {
         setAuthError(errorDescription.replace(/\+/g, ' '));
-        // Clear hash to clean up URL
         window.history.replaceState(null, '', window.location.pathname);
       }
     }
 
-    // Check for initial user
     getCurrentUser().then(setUser);
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth event:', _event, session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setAuthError(null); // Clear error on success
+        setAuthError(null);
         loadSessions();
       }
     });
@@ -79,9 +74,8 @@ const App: React.FC = () => {
       setTheme(storedTheme);
     }
 
-
     if (window.innerWidth >= 1024) {
-      setLayoutMode('dashboard');
+      setLayoutMode('standard');
     } else {
       setLayoutMode('standard');
     }
@@ -127,7 +121,7 @@ const App: React.FC = () => {
     setActiveView(view);
   };
 
-  const handleStop = async () => {
+  const handleStop = React.useCallback(async () => {
     const duration = stopTimer();
     if (duration > 10) {
       const newSession: Session = {
@@ -141,7 +135,7 @@ const App: React.FC = () => {
     } else {
       resetTimer();
     }
-  };
+  }, [stopTimer, resetTimer]);
 
   const timerProps = {
     elapsedSeconds: elapsedTime,
@@ -216,7 +210,11 @@ const App: React.FC = () => {
           </button>
 
           <button
-            onClick={() => handleViewChange(View.TRACKER)}
+            onClick={() => {
+              handleViewChange(View.TRACKER);
+              setLayoutMode('standard');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity focus:outline-none"
           >
             <img src="/logo.png" alt="Flow State Tracker" className="w-10 h-10 drop-shadow-lg" />
@@ -264,7 +262,6 @@ const App: React.FC = () => {
             </AnimatePresence>
           </button>
 
-          {/* Auth Button */}
           <div className="relative">
             {user ? (
               <div className="relative">
@@ -360,6 +357,16 @@ const App: React.FC = () => {
         </AnimatePresence>
 
       </main>
+
+      {!isDashboard && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 pointer-events-none animate-bounce opacity-50 md:hidden">
+          <div className="w-6 h-6 text-zinc-400 dark:text-zinc-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
+      )}
 
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-zinc-200 dark:border-white/5 flex justify-around py-4 z-50 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)] transition-colors duration-500">
         <button
