@@ -103,8 +103,21 @@ export const deleteNote = async (noteId: string): Promise<void> => {
             .delete()
             .eq('id', noteId);
 
-        if (error) {
-            console.error('Error deleting note from Supabase:', error);
-        }
+    }
+};
+
+export const submitFeedback = async (message: string): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+        .from('feedback')
+        .insert([{
+            message,
+            user_id: user?.id
+        }]);
+
+    if (error) {
+        console.error('Error submitting feedback:', error);
+        throw error;
     }
 };

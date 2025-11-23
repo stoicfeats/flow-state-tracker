@@ -13,6 +13,7 @@ import { TrackerDashboard } from './components/TrackerDashboard';
 import { Notes } from './components/Notes';
 import { useTimer } from './hooks/useTimer';
 import { LoginModal } from './components/Auth/LoginModal';
+import { FeedbackModal } from './components/FeedbackModal';
 import { supabase, signOut, getCurrentUser } from './services/supabase';
 import { fetchSessions, addSession } from './services/data';
 import { Session, View } from './types';
@@ -32,6 +33,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   const {
     elapsedTime,
@@ -246,6 +248,13 @@ const App: React.FC = () => {
           </nav>
 
           <button
+            onClick={() => setIsFeedbackModalOpen(true)}
+            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors text-sm font-medium"
+          >
+            <span>Kaizen</span>
+          </button>
+
+          <button
             onClick={toggleTheme}
             className="p-2.5 rounded-full bg-white/40 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-white/60 dark:hover:bg-white/10 transition-all backdrop-blur-sm"
           >
@@ -310,6 +319,7 @@ const App: React.FC = () => {
       </header>
 
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
 
       <div className="md:hidden absolute top-4 right-4 z-50">
         <button

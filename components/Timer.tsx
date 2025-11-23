@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Square, RotateCcw, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { playTimerFinishedSound } from '../utils/sound';
 
 interface TimerProps {
   elapsedSeconds: number;
@@ -30,8 +31,11 @@ export const Timer: React.FC<TimerProps> = ({
   const [customInputValue, setCustomInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+
+
   useEffect(() => {
     if (isRunning && elapsedSeconds >= targetMinutes * 60) {
+      playTimerFinishedSound();
       onStop();
     }
   }, [elapsedSeconds, targetMinutes, isRunning, onStop]);
@@ -101,7 +105,7 @@ export const Timer: React.FC<TimerProps> = ({
       style={{ transform: `scale(${scale})` }}
     >
 
-      <div className="flex items-center gap-2 mb-8 h-8">
+      <div className="flex items-center gap-2 mb-8 h-8 mt-12 md:mt-0">
         {presets.map(min => (
           <button
             key={min}
